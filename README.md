@@ -67,14 +67,6 @@ npm run dev
 | `PAYOS_CLIENT_ID` | Client ID từ PayOS |
 | `TELEGRAM_BOT_TOKEN`| Token của Bot tạo từ BotFather |
 
-## Triển khai lên Cloud (Koyeb)
-
-Dự án đã được cấu hình sẵn file `koyeb.yaml`. Để triển khai:
-1. Đẩy mã nguồn lên GitHub.
-2. Kết nối repo với Koyeb.
-3. Tạo các **Secrets** trên giao diện Koyeb tương ứng với các biến trong `.env`.
-4. Koyeb sẽ tự động build và deploy dựa trên file cấu hình.
-
 ## Cấu trúc thư mục
 ```text
 SipSync/
