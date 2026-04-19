@@ -1,11 +1,11 @@
 version: "1.0"
 services:
   # --- Dịch vụ Backend ---
-  - name: casso-backend
+  - name: sipsync-backend
     type: web
     regions:
       - sin
-    instance_type: nano
+    instance_type: nano # Tiết kiệm nhất, nằm trong gói miễn phí
     source:
       git:
         workdir: backend
@@ -18,7 +18,7 @@ services:
         value: "8000"
       - key: NODE_ENV
         value: "production"
-      # Các biến bảo mật nên được cấu hình qua giao diện Koyeb hoặc Koyeb Secrets
+      # Các biến bảo mật (Bạn PHẢI tạo các tên này trong mục Settings -> Secrets của Koyeb trước)
       - key: MONGODB_URI
         secret: MONGO_URI
       - key: REDIS_URL
@@ -32,7 +32,7 @@ services:
       - key: PAYOS_CHECKSUM_KEY
         secret: PAYOS_CHECKSUM_KEY
       - key: PAYOS_WEBHOOK_URL
-        value: "https://casso-backend.koyeb.app/webhook/payos"
+        value: "https://sipsync-backend-thu-sunrise.koyeb.app/webhook/payos"
       - key: TELEGRAM_BOT_TOKEN
         secret: TELEGRAM_BOT_TOKEN
       - key: TELEGRAM_WEBHOOK_TOKEN
@@ -43,11 +43,11 @@ services:
         secret: ADMIN_PASSWORD
 
   # --- Dịch vụ Frontend ---
-  - name: casso-frontend
+  - name: sipsync-frontend
     type: web
     regions:
       - sin
-    instance_type: nano
+    instance_type: nano # Tiết kiệm nhất
     source:
       git:
         workdir: frontend
@@ -57,4 +57,5 @@ services:
         protocol: http
     env:
       - key: VITE_API_URL
-        value: "https://casso-backend.koyeb.app"
+        # Thay <tên-user> tương tự như trên
+        value: "https://sipsync-backend-<tên-user>.koyeb.app"

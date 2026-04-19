@@ -4,7 +4,7 @@ const AiService = require('./ai.service');
 const MenuService = require('../menu/menu.service');
 const CartService = require('../cart/cart.service');
 const logger = require('../../shared/logger');
-const { Console } = require('winston/lib/winston/transports');
+
 
 const AiController = {
     handleChat : async (req, res) => {
