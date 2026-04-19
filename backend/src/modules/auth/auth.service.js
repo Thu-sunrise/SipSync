@@ -7,7 +7,6 @@ const AuthService = {
      * Xác thực mật khẩu admin và tạo JWT
      */
     login: async (password) => {
-        // Kiểm tra mật khẩu từ biến môi trường
         if (password !== process.env.ADMIN_PASSWORD) {
             throw new Error('INVALID_PASSWORD');
         }

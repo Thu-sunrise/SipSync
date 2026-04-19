@@ -25,7 +25,7 @@ const AiController = {
                 return res.status(200).json({ 
                     status: 'success', 
                     message: 'Bot không tìm thấy món ăn nào trong câu của bạn.',
-                    data: await CartService.getCart(telegramUserId) // Trả về giỏ hàng hiện tại
+                    data: await CartService.getCart(telegramUserId) 
                 });
             }
 
@@ -36,7 +36,6 @@ const AiController = {
                 console.log(matchedItem);
                 
                 if (matchedItem) {
-                    // Cập nhật lại tên chuẩn và giá chuẩn trước khi cho vào giỏ
                     item.name = matchedItem.name;
                     item.unitPrice = MenuService.getPrice(matchedItem.name, item.size);
                     

@@ -15,12 +15,11 @@ const BotController = {
         const secretToken = req.headers['x-telegram-bot-api-secret-token'];
         if (secretToken !== process.env.TELEGRAM_WEBHOOK_TOKEN) {
             logger.warn('Cảnh báo: Có yêu cầu không hợp lệ gửi đến Webhook Telegram (Sai Secret Token)');
-            return res.sendStatus(403); // Từ chối truy cập
+            return res.sendStatus(403);
         }
 
         const { message } = req.body;
         
-        // Telegram có thể gửi nhiều loại update, mình chỉ quan tâm text message
         if (!message || !message.text) {
             return res.sendStatus(200);
         }
@@ -174,7 +173,7 @@ const BotController = {
             logger.error({ err: error, telegramUserId }, 'Lỗi xử lý webhook Telegram');
             // Thông báo lỗi nhẹ nhàng cho khách
             await BotService.sendMessage(chatId, 'Dạ xin lỗi bạn, hệ thống của mình đang gặp chút trục trặc nhỏ. Bạn thử lại sau ít phút nha!');
-            res.sendStatus(200); // Trả 200 để Telegram không gửi lại webhook liên tục khi có lỗi logic
+            res.sendStatus(200); 
         }
     }
 };
