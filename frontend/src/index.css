@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+  /* MUI-inspired Palette with your original colors */
+  --bg-cream: #FFFDF5;
+  --bg-surface: #F9F1E7;
+  --card-white: #FFFFFF;
+  --primary: #AF6E4D; /* Caramel */
+  --secondary: #5D4037; /* Brown */
+  --accent: #C68E17; /* Gold */
+  --text-primary: #2C1810;
+  --text-secondary: #6D4C41;
+  --divider: rgba(175, 110, 77, 0.12);
+  
+  /* MUI Elevation Shadows */
+  --shadow-1: 0px 2px 1px -1px rgba(0,0,0,0.05), 0px 1px 1px 0px rgba(0,0,0,0.02), 0px 1px 3px 0px rgba(0,0,0,0.03);
+  --shadow-2: 0px 3px 1px -2px rgba(0,0,0,0.05), 0px 2px 2px 0px rgba(0,0,0,0.02), 0px 1px 5px 0px rgba(0,0,0,0.03);
+  --shadow-3: 0px 3px 3px -2px rgba(175, 110, 77, 0.1), 0px 3px 4px 0px rgba(175, 110, 77, 0.05), 0px 1px 8px 0px rgba(175, 110, 77, 0.05);
+  
+  --font-main: 'Outfit', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-cream);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+/* AppBar / Header Style */
+.main-header {
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--card-white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-1);
+}
+
+.header-brand h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.header-brand p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Material Status Badge */
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 8px;
+  color: #065F46;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10B981;
+}
+
+.logout-button {
+  background: transparent;
+  border: 1px solid var(--divider);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-button:hover {
+  background: #FEF2F2;
+  color: #DC2626;
+  border-color: #FEE2E2;
+}
+
+/* Kanban Board MUI Style */
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.kanban-column {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 20px;
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Khoảng cách giữa Header và Content */
+  transition: background 0.2s;
+}
+
+.column-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* KHOẢNG CÁCH GIỮA CÁC THẺ (CARDS) */
+  flex-grow: 1;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.column-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--secondary);
+}
+
+.column-title h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.count-badge {
+  background: rgba(175, 110, 77, 0.15);
+  color: var(--primary);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Order Card MUI Style */
+.order-card {
+  background: var(--card-white);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-1);
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.order-card:hover {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+  border-color: var(--divider);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.order-id {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  background: rgba(175, 110, 77, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.order-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.customer-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.item-list {
+  list-style: none;
+  background: #FAFAFA;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+
+.item-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.item-quantity {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--divider);
+  padding-top: 12px;
+}
+
+.total-amount {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--secondary);
+}
+
+.tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.tag-queued { background: #FFF7ED; color: #9A3412; }
+.tag-progress { background: #EFF6FF; color: #1E40AF; }
+.tag-completed { background: #F0FDF4; color: #166534; }
+
+/* Login Page MUI Style */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 24, 16, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.login-card {
+  background: var(--card-white);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 28px;
+  box-shadow: var(--shadow-3);
+  animation: zoomIn 0.3s ease-out;
+}
+
+.login-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: 0.5px; /* Giãn chữ đều */
+}
+
+.login-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Khoảng cách giữa các thành phần form đều nhau */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--divider);
+  font-size: 1rem;
+  background: white;
+  transition: all 0.2s;
+}
+
+.login-form input:focus {
+  outline: none;
+  border: 2px solid var(--primary);
+  padding: 13px 15px; /* Adjust for border */
+}
+
+.login-button {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 100px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex; /* Đảm bảo icon và chữ nằm trên 1 hàng */
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Khoảng cách giữa icon và chữ */
+  transition: background 0.2s;
+}
+
+.login-button:hover {
+  background: var(--secondary);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 1024px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+}
