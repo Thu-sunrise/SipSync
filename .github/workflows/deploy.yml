@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Backend Deps
+        run: |
+          cd backend
+          npm install
+
+      - name: Backend Lint Check
+        run: |
+          cd backend
+          # Bạn có thể thêm lệnh npm run lint ở đây nếu có cấu hình eslint
+          node -c src/server.js 
+
+      - name: Install Frontend Deps
+        run: |
+          cd frontend
+          npm install
+
+      - name: Frontend Build Check
+        run: |
+          cd frontend
+          npm run build
+
+  # Sau khi các bước trên pass, Koyeb sẽ tự động kéo code về deploy 
+  # dựa trên kết nối GitHub Webhook đã thiết lập ở Bước 3.
