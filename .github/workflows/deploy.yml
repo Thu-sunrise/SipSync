@@ -38,5 +38,4 @@ jobs:
           cd frontend
           npm run build
 
-  # Sau khi các bước trên pass, Koyeb sẽ tự động kéo code về deploy 
-  # dựa trên kết nối GitHub Webhook đã thiết lập ở Bước 3.
+
