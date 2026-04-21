@@ -13,6 +13,12 @@ SipSync là một giải pháp quản lý và đặt món hiện đại, kết h
 - **Real-time Updates**: Quản trị viên nhận thông báo đơn hàng mới tức thì qua Socket.io.
 - **Deploy sẵn sàng**: Hỗ trợ Docker và file cấu hình cho Koyeb (CI/CD).
 
+## Trải nghiệm thực tế (Live Demo)
+
+- **Telegram Bot**: Trải nghiệm tính năng đặt hàng bằng AI trực tiếp qua bot Telegram: [@thutrasua_bot](https://t.me/thutrasua_bot).
+- **Triển khai (Deployment)**: Hệ thống đang được chạy live thực tế trên nền tảng **Koyeb**.
+- **CI/CD**: Tích hợp luồng CI/CD tự động bằng **GitHub Actions**, tự động deploy phiên bản mới nhất lên Koyeb mỗi khi có cập nhật mã nguồn.
+
 ## Công nghệ sử dụng
 
 - **Frontend**: React.js, Vite, TailwindCSS, Socket.io-client.
