@@ -69,13 +69,23 @@ const BotController = {
                 logger.info({ order_entities }, '>>> DỮ LIỆU MÓN AI TRÍCH XUẤT');
                 for (const entity of order_entities) {
                     const itemName = entity.item_name || entity.name || entity.item;
+                    const action = entity.action || 'add';
+
                     if (itemName) {
-                        await CartService.addItem(telegramUserId, {
+                        const parsedItem = {
                             name: itemName,
                             quantity: entity.quantity || 1,
                             size: entity.size || 'M',
                             note: entity.note || ''
-                        });
+                        };
+
+                        if (action === 'update') {
+                            await CartService.updateItem(telegramUserId, parsedItem);
+                        } else if (action === 'remove') {
+                            await CartService.removeItem(telegramUserId, itemName);
+                        } else {
+                            await CartService.addItem(telegramUserId, parsedItem);
+                        }
                     }
                 }
             }

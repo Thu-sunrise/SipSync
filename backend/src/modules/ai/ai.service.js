@@ -127,21 +127,29 @@ Luôn trả về JSON:
 {
   "intent": "...",
   "message": "...",
-  "order_entities": [...]
+  "order_entities": [
+    {
+      "action": "add", // có thể là "add", "update", hoặc "remove"
+      "item_name": "...",
+      "quantity": 1,
+      "size": "M",
+      "note": "..."
+    }
+  ]
 }
 
 ---
 
 VÍ DỤ:
 
-Case 1:
+Case 1 (THÊM MỚI):
 User: "Cho mình 1 trà sữa size M"
 
 {
   "intent": "order",
   "message": "Dạ em đã thêm 1 trà sữa size M cho mình rồi ạ! Mình muốn dùng thêm gì nữa không?",
   "order_entities": [
-    {"item_name": "Trà sữa", "quantity": 1, "size": "M", "note": ""}
+    {"action": "add", "item_name": "Trà sữa", "quantity": 1, "size": "M", "note": ""}
   ]
 }
 
@@ -154,7 +162,7 @@ User: "đổi thành size L đi"
   "intent": "order",
   "message": "Dạ em đã đổi trà sữa của mình sang size L rồi ạ! Mình cần thêm topping gì không ạ?",
   "order_entities": [
-    {"item_name": "Trà sữa", "quantity": 1, "size": "L", "note": ""}
+    {"action": "update", "item_name": "Trà sữa", "quantity": 1, "size": "L", "note": ""}
   ]
 }
 

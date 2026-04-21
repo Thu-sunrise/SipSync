@@ -46,6 +46,48 @@ const CartService = {
         }
     },
 
+    // 2.1 Cập nhật món trong giỏ (ghi đè size, quantity, note)
+    updateItem: async (userId, item) => {
+        try {
+            logger.info({ userId, item }, '>>> ĐANG CẬP NHẬT MÓN TRONG GIỎ');
+            const key = `cart:${userId}`;
+            let cart = await CartService.getCart(userId);
+            
+            // Tìm món cùng tên để cập nhật
+            const existingItemIndex = cart.findIndex(i => i.name === item.name);
+
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex] = { ...cart[existingItemIndex], ...item };
+                await redisClient.set(key, JSON.stringify(cart), 'EX', TTL_24H);
+                logger.info({ userId, cartSize: cart.length }, '>>> ĐÃ CẬP NHẬT GIỎ HÀNG THÀNH CÔNG');
+            } else {
+                // Nếu không tìm thấy món để update, ta tự động thêm mới
+                return CartService.addItem(userId, item);
+            }
+            return cart;
+        } catch (error) {
+            logger.error(`Lỗi cập nhật món cho user ${userId}:`, { error: error.message });
+            throw error;
+        }
+    },
+
+    // 2.2 Xoá món khỏi giỏ
+    removeItem: async (userId, itemName) => {
+        try {
+            logger.info({ userId, itemName }, '>>> ĐANG XOÁ MÓN KHỎI GIỎ');
+            const key = `cart:${userId}`;
+            let cart = await CartService.getCart(userId);
+            
+            cart = cart.filter(i => i.name !== itemName);
+            await redisClient.set(key, JSON.stringify(cart), 'EX', TTL_24H);
+            
+            return cart;
+        } catch (error) {
+            logger.error(`Lỗi xoá món cho user ${userId}:`, { error: error.message });
+            throw error;
+        }
+    },
+
     // 3. xóa trắng giỏ hàng (Dùng khi khách đã thanh toán xong)
     clearCart: async (userId) => {
         try {
