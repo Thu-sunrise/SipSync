@@ -13,6 +13,8 @@ spec:
       labels:
         app: casso-backend
     spec:
+      nodeSelector:
+        role: worker
       containers:
         - name: casso-backend
           image: minhthu1704/casso-backend:v1

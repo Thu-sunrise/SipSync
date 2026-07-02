@@ -24,6 +24,8 @@ jobs:
 
       - name: Build React app
         working-directory: ./frontend
+        env: 
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }} 
         run: npm run build
 
       - name: Configure AWS Credentials

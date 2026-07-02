@@ -18,7 +18,7 @@ const server = http.createServer(app);
 // 2. Khởi tạo Socket.io
 const io = new Server(server, {
     cors: {
-        origin: "*", // Cho phép Dashboard kết nối
+        origin: process.env.FRONTEND_URL || 'https://web.hubsunrise.me', // Chỉ cho phép Dashboard chính thống kết nối
         methods: ["GET", "POST", "PATCH"]
     }
 });

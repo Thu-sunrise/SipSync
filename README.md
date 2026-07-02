@@ -108,6 +108,12 @@ curl -X POST "https://api.telegram.org/bot<YOUR_TELEGRAM_BOT_TOKEN>/setWebhook" 
      -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "your_secret_token"}'
 ```
 
+**8. Kiểm tra lại Trạng thái Webhook (Tùy chọn):**
+Để chắc chắn Telegram đã nhận đúng đường link và không bị kẹt tin nhắn nào, hãy chạy lệnh hỏi thăm này:
+```bash
+curl "https://api.telegram.org/bot<YOUR_TELEGRAM_BOT_TOKEN>/getWebhookInfo"
+```
+
 ## Cấu hình Biến Môi trường (Environment Variables)
 *Lưu ý: Các biến này được quản lý an toàn qua Github Secrets và K8s Secrets, không đẩy lên Git.*
 

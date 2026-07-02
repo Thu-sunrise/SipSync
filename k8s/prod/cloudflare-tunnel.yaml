@@ -13,6 +13,8 @@ spec:
       labels:
         app: cloudflare-tunnel
     spec:
+      nodeSelector:
+        role: worker
       containers:
         - name: cloudflared
           image: cloudflare/cloudflared:latest

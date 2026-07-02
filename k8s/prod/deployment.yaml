@@ -13,9 +13,12 @@ spec:
       labels:
         app: casso-backend
     spec:
+      nodeSelector:
+        role: worker
       containers:
         - name: casso-backend
-          image: minhthu1704/casso-backend:v1
+          image: minhthu1704/casso-backend:latest
+          imagePullPolicy: Always
           ports: 
           - containerPort: 8000
           envFrom:
@@ -23,4 +26,5 @@ spec:
               name: backend-config
           - secretRef: 
               name: backend-secret
+
         

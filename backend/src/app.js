@@ -9,7 +9,10 @@ const setupSwagger = require('./config/swagger');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'https://web.hubsunrise.me',
+    credentials: true
+}));
 app.use(express.json());
 
 // swagger
