@@ -105,7 +105,7 @@ kubectl apply -f k8s/prod/
 ```bash
 curl -X POST "https://api.telegram.org/bot8695936469:AAHelO8lsxu8HX9mHGStyqt-kdi24PatAuE/setWebhook" \
      -H "Content-Type: application/json" \
-     -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "SipSync_Secret_ratlabimat_135"}'
+     -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "your_secret_token"}'
 ```
 
 ## Cấu hình Biến Môi trường (Environment Variables)
