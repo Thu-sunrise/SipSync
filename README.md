@@ -103,7 +103,7 @@ kubectl apply -f k8s/prod/
 
 **7. Cắm lại Webhook cho Telegram (Khôi phục luồng tin nhắn):**
 ```bash
-curl -X POST "https://api.telegram.org/bot8695936469:AAHelO8lsxu8HX9mHGStyqt-kdi24PatAuE/setWebhook" \
+curl -X POST "https://api.telegram.org/bot<YOUR_TELEGRAM_BOT_TOKEN>/setWebhook" \
      -H "Content-Type: application/json" \
      -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "your_secret_token"}'
 ```
