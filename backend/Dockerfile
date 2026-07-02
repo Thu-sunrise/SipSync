@@ -1,20 +1,20 @@
 # Use Node.js LTS as the base image
 FROM node:20-slim
 
-# Set the working directory
+ENV NODE_ENV=production
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+RUN chown node:node /app
 
-# Install production dependencies
-RUN npm install --production
+USER node
 
-# Copy the rest of the application code
-COPY . .
+COPY --chown=node:node package*.json ./
 
-# Expose the port the app runs on
+RUN npm ci --omit=dev && npm cache clean --force
+
+COPY --chown=node:node . .
+
 EXPOSE 8000
 
-# Start the application
 CMD ["npm", "start"]

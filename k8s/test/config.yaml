@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config 
+  namespace: casso-prod
+data:
+  # Logger
+  LOG_LEVEL: "debug"
+  NODE_ENV: "production"
+  PORT: "8000"
+  REDIS_PORT: "6379"
+  PAYOS_CLIENT_ID: "0391ae16-b473-4e56-9c6e-25d78e951805"
+  PAYOS_WEBHOOK_URL: "https://livable-canyon-humvee.ngrok-free.dev/webhook/payos"
+  TELEGRAM_WEBHOOK_URL: "https://api.telegram.org/bot8695936469:AAHelO8lsxu8HX9mHGStyqt-kdi24PatAuE/setWebhook?url=https://livable-canyon-humvee.ngrok-free.dev/webhook/telegram"

@@ -1,0 +1,12 @@
+# xin cap phat o SSD dung luu tru du lieu cua mongoDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-vpc 
+  namespace: casso-test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

@@ -3,7 +3,8 @@ const logger = require('../../shared/logger');
 const MenuService = require('../menu/menu.service');
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    baseURL: 'https://api.groq.com/openai/v1',
+    apiKey: process.env.GROQ_API_KEY || process.env.OPENAI_API_KEY
 })
 
 const getSystemPrompt = () => {
@@ -192,7 +193,7 @@ const AiService = {
             ];
 
             const response = await openai.chat.completions.create({
-                model: 'gpt-4o-mini',
+                model: 'llama-3.3-70b-versatile',
                 messages,
                 temperature: 0.7,
                 response_format: { type: "json_object" } 

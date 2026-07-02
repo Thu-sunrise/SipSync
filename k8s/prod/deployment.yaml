@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casso-backend-deployment
+  namespace: casso-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: casso-backend
+  template:
+    metadata:
+      labels:
+        app: casso-backend
+    spec:
+      containers:
+        - name: casso-backend
+          image: minhthu1704/casso-backend:v1
+          ports: 
+          - containerPort: 8000
+          envFrom:
+          - configMapRef: 
+              name: backend-config
+          - secretRef: 
+              name: backend-secret
+        
