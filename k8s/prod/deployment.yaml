@@ -26,5 +26,10 @@ spec:
               name: backend-config
           - secretRef: 
               name: backend-secret
-
-        
+          resources:
+            requests:
+              memory: "150Mi"
+              cpu: "150m"
+            limits:
+              memory: "300Mi"
+              cpu: "300m"

@@ -31,17 +31,16 @@ const BotController = {
         const updateId = req.body.update_id;
 
         try {
-            // Kiểm tra trùng lặp tin nhắn (Idempotency)
+            // Kiểm tra trùng lặp tin nhắn (Idempotency) bằng Distributed Lock (SETNX)
             if (updateId) {
                 const redisClient = require('../../shared/redis').getRedisClient();
                 const lockKey = `bot:update:${updateId}`;
-                const isProcessed = await redisClient.get(lockKey);
-                if (isProcessed) {
+                // 'NX' = Chỉ set nếu key chưa tồn tại. Đảm bảo tính nguyên tử (atomic)
+                const acquired = await redisClient.set(lockKey, 'processed', 'EX', 600, 'NX');
+                if (!acquired) {
                     logger.warn({ updateId }, 'Phát hiện tin nhắn trùng lặp từ Telegram, bỏ qua.');
                     return res.sendStatus(200);
                 }
-                // Lưu lại updateId này trong 10 phút để chặn trùng
-                await redisClient.set(lockKey, 'processed', 'EX', 600);
             }
             // 1. Kiểm tra Rate Limit (20 msg/phút)
             const rateLimit = await CartService.checkRateLimit(telegramUserId);
@@ -113,6 +112,16 @@ const BotController = {
                     break;
 
                 case 'confirm_order':
+                    const redisClient = require('../../shared/redis').getRedisClient();
+                    const checkoutLockKey = `lock:checkout:${telegramUserId}`;
+                    
+                    // Khóa 15 giây cho quá trình checkout
+                    const checkoutAcquired = await redisClient.set(checkoutLockKey, 'locked', 'EX', 15, 'NX');
+                    if (!checkoutAcquired) {
+                        await BotService.sendMessage(chatId, 'Dạ hệ thống đang xử lý đơn hàng cho bạn rồi, bạn đợi xíu nha! ⏳');
+                        break;
+                    }
+
                     try {
                         // 8. Chốt đơn & Xóa giỏ hàng + Lịch sử chat
                         const { order, payment } = await OrderService.checkout(telegramUserId, customerName);
@@ -146,6 +155,9 @@ const BotController = {
                         } else {
                             throw err;
                         }
+                    } finally {
+                        // Luôn giải phóng khóa sau khi checkout xong (kể cả lỗi hay thành công)
+                        await redisClient.del(checkoutLockKey);
                     }
                     break;
 

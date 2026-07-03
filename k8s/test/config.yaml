@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-config 
-  namespace: casso-prod
+  namespace: casso-test
 data:
   # Logger
   LOG_LEVEL: "debug"
