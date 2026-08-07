@@ -15,6 +15,16 @@ Dự án được xây dựng trên nền tảng kiến trúc **Cloud-Native**, 
 - **Real-time Dashboard**: Quản trị viên nhận thông báo đơn hàng mới theo thời gian thực qua Socket.io.
 - **Tự động hóa CI/CD**: Hệ thống tự động Build và Deploy lên AWS thông qua Github Actions với nguyên tắc Zero Downtime.
 
+## Công nghệ sử dụng (Tech Stack)
+
+- **Frontend:** React 19, Vite, Tailwind CSS v4, Material UI, Framer Motion, dnd-kit (Drag & Drop), Socket.io-client.
+- **Backend:** Node.js, Express 5, MongoDB (Mongoose), Redis (ioredis), Socket.io, OpenAI API, PayOS, JWT, Swagger (OpenAPI).
+- **DevOps & Infrastructure (IaC):**
+  - **Container & Orchestration:** Docker, Kubernetes (K3s).
+  - **Cloud & Network:** AWS (EC2, S3, VPC), Cloudflare CDN & Zero Trust Tunnels.
+  - **CI/CD:** Github Actions.
+  - **IaC:** Terraform.
+
 ## Kiến trúc Hệ thống (System Architecture)
 
 - **Frontend (Web App)**: Xây dựng bằng React/Vite, lưu trữ tĩnh trên **AWS S3** và được tăng tốc/bảo mật HTTPS bởi mạng lưới CDN của **Cloudflare**.
@@ -79,7 +89,11 @@ scp -i "khoa-cua-ban.pem" ubuntu@<IP_MOI>:/etc/rancher/k3s/k3s.yaml ~/.kube/conf
 sed -i 's/127.0.0.1/<IP_MOI>/g' ~/.kube/config
 ```
 
-**4. Phục hồi Namespace và Quota (Giai đoạn 0):**
+**4. Cập nhật lại Github Secrets (Rất Quan Trọng):**
+Vì EC2 mới tạo sẽ có IP Public mới, luồng CI/CD của Github Actions sẽ bị fail nếu không biết IP mới này. Bạn cần vào kho lưu trữ Github > **Settings** > **Secrets and variables** > **Actions** và cập nhật lại biến:
+- `EC2_HOST`: Dán IP Public mới vào đây.
+
+**5. Phục hồi Namespace và Quota (Giai đoạn 0):**
 ```bash
 # Đứng ở thư mục gốc Casso
 kubectl create namespace casso-prod
@@ -88,31 +102,44 @@ kubectl apply -f k8s/prod/quota-prod.yaml
 kubectl apply -f k8s/test/quota-test.yaml
 ```
 
-**5. Phục hồi Database Cục bộ cho phòng Test (Giai đoạn 0.5):**
+**6. Phục hồi Database Cục bộ cho phòng Test (Giai đoạn 0.5):**
 ```bash
 kubectl apply -f k8s/test/mongo-pvc.yaml
 kubectl apply -f k8s/test/mongo-service.yaml
 kubectl apply -f k8s/test/mongo-statefulset.yaml
 ```
 
-**6. Deploy lại Backend và Nối cáp Cloudflare (Giai đoạn 1):**
+**7. Phục hồi Kubernetes Secrets (Bắt buộc):**
+Vì file `secret.yaml` chứa thông tin nhạy cảm (đã bị `.gitignore` chặn đẩy lên Git), bạn phải đảm bảo có sẵn file `k8s/prod/secret.yaml` trên máy tính cục bộ của mình, sau đó chạy:
+```bash
+kubectl apply -f k8s/prod/secret.yaml
+```
+
+**8. Deploy lại Backend và Nối cáp Cloudflare (Giai đoạn 1):**
 ```bash
 # Lệnh này sẽ dựng lại Backend và đánh thức đường hầm apihub.hubsunrise.me
 kubectl apply -f k8s/prod/
 ```
 
-**7. Cắm lại Webhook cho Telegram (Khôi phục luồng tin nhắn):**
+**9. Cắm lại Webhook cho Telegram (Khôi phục luồng tin nhắn):**
 ```bash
 curl -X POST "https://api.telegram.org/bot<YOUR_TELEGRAM_BOT_TOKEN>/setWebhook" \
      -H "Content-Type: application/json" \
      -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "your_secret_token"}'
 ```
 
-**8. Kiểm tra lại Trạng thái Webhook (Tùy chọn):**
+**10. Kiểm tra lại Trạng thái Webhook (Tùy chọn):**
 Để chắc chắn Telegram đã nhận đúng đường link và không bị kẹt tin nhắn nào, hãy chạy lệnh hỏi thăm này:
 ```bash
 curl "https://api.telegram.org/bot<YOUR_TELEGRAM_BOT_TOKEN>/getWebhookInfo"
 ```
+
+## Lộ trình Cải thiện Hệ thống (System Improvements Roadmap)
+
+Tham khảo tài liệu [system_improvements.md](docs/system_improvements.md) để biết chi tiết về các giải pháp tối ưu hệ thống:
+- **Tự động hóa CI/CD Secrets:** Tích hợp sinh K8s `secret.yaml` tự động từ Github Secrets để tránh rò rỉ và dễ dàng xoay vòng khóa.
+- **Xử lý Webhook Bất đồng bộ (Async Webhook):** Tối ưu luồng xử lý Webhook Telegram sang background job để chống timeout và khắc phục tình trạng Retry Loop.
+- **Horizontal Scaling:** Cài đặt Redis Adapter cho Socket.io và cấu hình Session Affinity cho Kubernetes Service nhằm khắc phục lỗi kết nối đứt đoạn khi chạy nhiều replicas.
 
 ## Cấu hình Biến Môi trường (Environment Variables)
 *Lưu ý: Các biến này được quản lý an toàn qua Github Secrets và K8s Secrets, không đẩy lên Git.*
