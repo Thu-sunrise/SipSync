@@ -28,8 +28,8 @@ const MenuService = {
     },
 
     findByName: (name) => {
+        if (typeof name !== 'string' || !name.trim()) return null;
         const normalizedInput = MenuModel.normalizeString(name);
-        console.log(normalizedInput);
         const menuMap = MenuModel.getMap();
         
         // 1. Tìm chính xác 100%
@@ -60,7 +60,7 @@ const MenuService = {
             throw new Error(`ITEM_NOT_FOUND: ${itemName}`);
         }
         
-        const sizeUpper = size.toUpperCase();
+        const sizeUpper = String(size || 'M').toUpperCase();
         if (sizeUpper === 'L' && item.price_l > 0) return item.price_l;
         
         return item.price_m > 0 ? item.price_m : item.price_l;

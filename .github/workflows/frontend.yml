@@ -7,7 +7,26 @@ on:
     paths:
       - 'frontend/**'
 jobs:
+  lint:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Lint (ESLint)
+        working-directory: ./frontend
+        run: npm run lint
+
   build-and-deploy:
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code 

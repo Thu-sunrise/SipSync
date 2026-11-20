@@ -93,13 +93,12 @@ describe('Menu Service Tests - Extended', () => {
         expect(MenuService.getPrice('espresso', 'L')).toBe(25000);
     });
 
-    test('getPrice: Món không tồn tại', () => {
-        const result = MenuService.getPrice('khongtontai', 'M');
-        expect(result).toBeNull();
+    test('getPrice: Món không tồn tại → ném ITEM_NOT_FOUND', () => {
+        expect(() => MenuService.getPrice('khongtontai', 'M')).toThrow('ITEM_NOT_FOUND');
     });
 
     test('getPrice: Input null/undefined', () => {
-        expect(MenuService.getPrice(null, 'M')).toBeNull();
+        expect(() => MenuService.getPrice(null, 'M')).toThrow('INVALID_ITEM_NAME');
         expect(MenuService.getPrice('trasua', null)).toBe(30000); // fallback
     });
 

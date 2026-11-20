@@ -1,6 +1,7 @@
 const { OpenAI } = require('openai');
 const logger = require('../../shared/logger');
 const MenuService = require('../menu/menu.service');
+const { validateAiResponse } = require('../../shared/validators');
 
 const openai = new OpenAI({
     baseURL: 'https://api.groq.com/openai/v1',
@@ -199,14 +200,11 @@ const AiService = {
                 response_format: { type: "json_object" } 
             });
 
-            const rawContent = response.choices[0].message.content;
+            const rawContent = response.choices?.[0]?.message?.content;
             const parsedData = JSON.parse(rawContent);
-            
-            return {
-                intent: parsedData.intent || 'chat',
-                message: parsedData.message || 'Dạ bạn đợi mình xíu nhé!',
-                order_entities: parsedData.order_entities || []
-            };
+
+            // Validate + chuẩn hoá output của LLM trước khi đưa vào luồng đặt hàng
+            return validateAiResponse(parsedData);
 
         } catch (error) {
             logger.error({ err: error }, 'Lỗi khi gọi OpenAI API');

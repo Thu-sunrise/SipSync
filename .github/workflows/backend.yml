@@ -9,7 +9,30 @@ on:
       - '.github/workflows/backend.yml'
 
 jobs:
+  lint-and-test:
+    name: Lint & Test Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cài dependencies
+        run: npm install
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Unit test (Jest)
+        run: npm test
+
   build-and-deploy:
+    needs: lint-and-test
     runs-on: ubuntu-latest
     steps:
       - name: 1. Checkout Code
@@ -68,6 +91,7 @@ jobs:
             export KUBECONFIG=/home/ec2-user/.kube/config
             kubectl apply -f /home/ec2-user/k8s-configs/k8s/prod/
             kubectl rollout restart deployment casso-backend-deployment -n casso-prod
+            kubectl rollout status deployment casso-backend-deployment -n casso-prod --timeout=180s
 
       - name: 9. [ĐÓNG CỔNG 22] Khóa cửa tường lửa ngay lập tức
         if: always()
@@ -83,3 +107,14 @@ jobs:
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/setWebhook" \
                -H "Content-Type: application/json" \
                -d '{"url": "https://apihub.hubsunrise.me/webhook/telegram", "secret_token": "${{ secrets.TELEGRAM_WEBHOOK_TOKEN }}"}'
+
+
+      - name: 11. Kiểm tra sau deploy (Health check)
+        run: |
+          for i in $(seq 1 10); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" https://apihub.hubsunrise.me/health || true)
+            echo "Lần $i: HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "Health check thất bại sau deploy" && exit 1

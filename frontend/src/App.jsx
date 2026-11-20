@@ -64,7 +64,7 @@ export default function App() {
     } catch (error) {
       console.error('Lỗi lấy danh sách đơn hàng:', error);
     }
-  }, []);
+  }, [token]);
 
   const updateStatusOnServer = async (orderId, newStatus) => {
     try {
@@ -81,6 +81,8 @@ export default function App() {
 
   // --- Socket.io Listeners ---
   useEffect(() => {
+    // Tải dữ liệu ban đầu: setState xảy ra sau await (bất đồng bộ), không gây render chồng
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOrders();
 
     socket.on('connect', () => {

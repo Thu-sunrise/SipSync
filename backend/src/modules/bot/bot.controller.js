@@ -91,12 +91,13 @@ const BotController = {
 
             // 6. Xử lý dựa trên Intent
             switch (intent) {
-                case 'order':
+                case 'order': {
                     const ctaSuffix = '\n\nBạn muốn chốt đơn luôn không ạ? Nhắn "<b>Chốt đơn</b>" giúp mình nhé! ✨';
                     await BotService.sendMessage(chatId, botResponse + ctaSuffix);
                     break;
+                }
 
-                case 'view_cart':
+                case 'view_cart': {
                     const cart = await CartService.getCart(telegramUserId);
                     if (cart.length === 0) {
                         await BotService.sendMessage(chatId, 'Dạ giỏ hàng của bạn đang trống không ạ. Bạn muốn uống món gì thì cứ bảo mình nha! 🧋');
@@ -110,8 +111,9 @@ const BotController = {
                         await BotService.sendMessage(chatId, cartText);
                     }
                     break;
+                }
 
-                case 'confirm_order':
+                case 'confirm_order': {
                     const redisClient = require('../../shared/redis').getRedisClient();
                     const checkoutLockKey = `lock:checkout:${telegramUserId}`;
                     
@@ -160,13 +162,14 @@ const BotController = {
                         await redisClient.del(checkoutLockKey);
                     }
                     break;
+                }
 
                 case 'cancel':
                     await CartService.clearCart(telegramUserId);
                     await BotService.sendMessage(chatId, 'Dạ mình đã xóa giỏ hàng rồi ạ. Khi nào bạn muốn đặt lại thì cứ gọi mình nha! 👋');
                     break;
 
-                case 'view_menu':
+                case 'view_menu': {
                     const menuItems = require('../menu/menu.service').getAllItems();
                     let menuText = '<b>Thực đơn của quán mình đây ạ:</b>\n\n';
                     
@@ -183,6 +186,7 @@ const BotController = {
                     menuText += '<i>Bạn muốn uống món nào thì cứ bảo mình nha!</i>';
                     await BotService.sendMessage(chatId, menuText);
                     break;
+                }
 
                 default:
                     // Intent chat bình thường

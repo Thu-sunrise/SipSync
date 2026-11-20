@@ -6,6 +6,7 @@ const { Payment } = require('./payment.model');
 const { Order, OrderStatusLog } = require('../order/order.model');
 const BotService = require('../bot/bot.service');
 const logger = require('../../shared/logger');
+const { validatePaymentOrder, validatePayosWebhook } = require('../../shared/validators');
 
 // Khởi tạo
 const payos = new PayOS(
@@ -23,6 +24,11 @@ const PaymentService = {
      * @returns {object} - { qrCode, checkoutUrl, orderCode, amount, description }
      */
     createPaymentLink: async (order) => {
+    const check = validatePaymentOrder(order);
+    if (!check.valid) {
+        logger.error({ errors: check.errors }, 'Đơn hàng không hợp lệ, không tạo VietQR');
+        throw new Error(`INVALID_PAYMENT_ORDER: ${check.errors.join('; ')}`);
+    }
     try {
         // orderCode phải unique + số nguyên
         const orderCode =
@@ -84,8 +90,14 @@ const PaymentService = {
      */
     verifyWebhookData: (webhookBody) => {
         try {
-            const { data, signature } = webhookBody;
+            const { data, signature } = webhookBody || {};
             if (!data || !signature) return null;
+
+            const secret = process.env.PAYOS_CHECKSUM_KEY;
+            if (!secret) {
+                logger.error('Thiếu PAYOS_CHECKSUM_KEY, không thể xác thực webhook');
+                return null;
+            }
 
             // 1. Sắp xếp các key của data theo alphabet
             const sortedKeys = Object.keys(data).sort();
@@ -96,18 +108,19 @@ const PaymentService = {
                 .join('&');
 
             // 3. Tính toán chữ ký bằng HMAC-SHA256 với Checksum Key
-            const secret = process.env.PAYOS_CHECKSUM_KEY;
             const computedSignature = crypto
                 .createHmac('sha256', secret)
                 .update(queryString)
                 .digest('hex');
 
-            // 4. So sánh chữ ký
-            if (computedSignature === signature) {
+            // 4. So sánh chữ ký (constant-time để chống timing attack)
+            const a = Buffer.from(computedSignature);
+            const b = Buffer.from(String(signature));
+            if (a.length === b.length && crypto.timingSafeEqual(a, b)) {
                 return data;
             }
             
-            logger.error({ computedSignature, signature }, 'Chữ ký PayOS không khớp');
+            logger.error('Chữ ký PayOS không khớp');
             return null;
         } catch (error) {
             logger.error({ err: error.message }, 'Lỗi xác thực chữ ký thủ công');
@@ -123,13 +136,21 @@ const PaymentService = {
      */
     handleWebhook: async (webhookData) => {
         const { code, data } = webhookData;
-        const { orderCode, reference: webhookEventId, amount } = data || {};
 
         // Chỉ xử lý khi thanh toán thực sự thành công
         if (code !== '00') {
-            logger.info({ code, orderCode }, 'Webhook payOS: giao dịch không thành công, bỏ qua');
+            logger.info({ code, orderCode: data && data.orderCode }, 'Webhook payOS: giao dịch không thành công, bỏ qua');
             return;
         }
+
+        // Validate schema payload (signature đã được verify ở bước trước)
+        const shape = validatePayosWebhook({ ...webhookData, signature: webhookData.signature || 'verified' });
+        if (!shape.valid) {
+            logger.error({ errors: shape.errors }, 'Webhook payOS: payload sai schema, bỏ qua');
+            return;
+        }
+        const orderCode = Number(data.orderCode);
+        const { reference: webhookEventId, amount } = data;
 
         try {
             // Idempotency check: nếu đã xử lý webhookEventId này rồi thì skip
@@ -143,6 +164,12 @@ const PaymentService = {
             const payment = await Payment.findOne({ payosOrderCode: orderCode });
             if (!payment) {
                 logger.error({ orderCode }, 'Webhook: không tìm thấy payment record');
+                return;
+            }
+
+            // Số tiền thực nhận phải khớp số tiền của đơn
+            if (Number(amount) !== Math.round(payment.amount)) {
+                logger.error({ orderCode, expected: payment.amount, received: amount }, 'Webhook: số tiền không khớp, bỏ qua');
                 return;
             }
 
